@@ -15,17 +15,8 @@ if (!$result){
 $data = array();
 while ($row = pg_fetch_row($result)) {
     
-    $data[] = array('geneid'=> $row[0]);
-    $data[] = array('entrezid'=> $row[1]);
-    $data[] = array('a_ensemblid'=> $row[2]);
-    $data[] = array('a_biogridid'=> $row[3]);
-    $data[] = array('a_pharmgkbid'=> $row[4]);
-    $data[] = array('symbol'=> $row[5]);
-    $data[] = array('a_synonym'=> $row[6]);
-    $data[] = array('ncbitaxid'=> $row[7]);
-    $data[] = array('a_uniprotid'=> $row[8]);
-    $data[] = array('a_ecnumber'=> $row[9]);
-    $data[] = array('a_goid'=> $row[10]);
+    $data[] = array('geneid'=> $row[0],'entrezid'=> $row[1],'a_ensemblid'=> $row[2],'a_biogridid'=> $row[3],'a_pharmgkbid'=> $row[4],'symbol'=> $row[5],
+                    'a_synonym'=> $row[6],'ncbitaxid'=> $row[7],'a_uniprotid'=> $row[8],'a_ecnumber'=> $row[9],'a_goid'=> $row[10]);
 }
 
 echo json_encode($data);
