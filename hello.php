@@ -17,11 +17,15 @@ if (!$result){
     exit;
 }
 
-$o = array();
+$data = array();
 while ($row = pg_fetch_row($result)) {
     
-    $o[] = $row;
+    $data[] = $row;
+}
+
+if(isset($data))
+{
+    header('Content-Type: application/json');
+    echo json_encode($data);
 }
   
-// 3, 4 최종 결과 데이터를 JSON 스트링으로 변환 후 출력
-echo json_encode($o);
