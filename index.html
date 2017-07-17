@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+ 
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+  <script src="http://code.jquery.com/jquery-latest.js"></script> 
+</head>
+<body>
+
+<form action="/" id="searchForm">
+  <input type="text" name="s" placeholder="Search..." /> 
+  <input type="submit" value="Search" /> 
+</form> <!-- the result of the search will be rendered inside this div --> 
+
+<div id="result"></div> 
+
+
+
+<script>
+
+  $(document).ready(function() {
+    
+    $("#searchForm").submit(function(event) { 
+      
+      event.preventDefault(); 
+      
+      var $form = $( this ), term = $form.find( 'input[name="s"]' ).val(), url = $form.attr( 'action' ); 
+      
+      $.post( url, { s: term }, function( data ) { 
+        var content = $( data ).find( '#content' ); 
+        $( "#result" ).empty().append( content ); 
+        
+      });
+      
+    }); 
+    
+    
+    function getURL(){
+      var url = window.location.href;
+      var phenName = url.split('?')[1];
+      var fileName = phenName + '_search.txt';
+      GetDBJSON(fileName);
+    }
+    
+    function GetDBJSON(fileName){
+      $.getJSON('coconut_db/'+fileName, null, function(data){
+        for (i=0; i<data.length; i++){
+            tot_resultData.push(data[i].compounds);
+            tot_ruleIDarray.push(data[i].cocoaID);
+            tot_phenIDarray.push(data[i].disease);
+            tot_supparray.push(data[i].support);
+            tot_confarray.push(data[i].confidence);
+            tot_liftarray.push(data[i].lift);
+        }
+        compound_SQL = readTextFile('coconut_db/compounds/' +fileName);
+       
+        compound_SQL_FILE = '[' + compound_SQL_FILE +']';
+        compound_SQL_FILE = compound_SQL_FILE.replace(/}{/g, '},{');
+        //console.log(compound_SQL_FILE);
+        compound_SQL_json = JSON.parse(compound_SQL_FILE);
+        console.log(compound_SQL_json)
+
+      })
+    }
+    
+    
+  });
+</script>
+    
+
+
+</body>
+</html>
