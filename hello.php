@@ -50,7 +50,7 @@ while ($row = pg_fetch_row($result4)) {
                     'a_synonym'=> $row[6],'ncbitaxid'=> $row[7],'a_uniprotid'=> $row[8],'a_ecnumber'=> $row[9],'a_goid'=> $row[10]);
 }
 
-$data_all = '{ $entity1 => $data1 , $entity2 => $data2 , $entity3 => $data3 , $entity4 => $data4}';
+$data_all = array($entity1 => $data1 , $entity2 => $data2 , $entity3 => $data3 , $entity4 => $data4);
 
 
 print_r ($data_all);
