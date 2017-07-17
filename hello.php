@@ -45,7 +45,7 @@ while ($row = pg_fetch_row($result4)) {
                     'a_synonym'=> $row[6],'ncbitaxid'=> $row[7],'a_uniprotid'=> $row[8],'a_ecnumber'=> $row[9],'a_goid'=> $row[10]);
 }
 
-echo $data1;
+print_r ($data1);
 // $fp = fopen('dic.json', 'w');
 // fwrite($fp, json_encode($data));
 // fclose($fp);
