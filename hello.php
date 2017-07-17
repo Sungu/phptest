@@ -19,21 +19,8 @@ if (!$result){
 
 $o = array();
 while ($row = pg_fetch_row($result)) {
-    $t = new stdClass();
-    echo "$row[0]";
-    $t->geneid = $row[0]->geneid;
-    $t->entrezid = $row[1]->entrezid;
-    $t->a_ensemblid = $row[2]->a_ensemblid;
-    $t->a_biogridid = $row[3]->a_biogridid;
-    $t->a_pharmgkbid = $row[4]->a_pharmgkbid;
-    $t->symbol = $row[5]->symbol;
-    $t->a_synonym = $row[6]->a_synonym;
-    $t->ncbitaxid = $row[7]->ncbitaxid;
-    $t->a_uniprotid = $row[8]->a_uniprotid;
-    $t->a_ecnumber = $row[9]->a_ecnumber;
-    $t->a_goid = $row[10]->a_goid;
-    $o[] = $t;
-    unset($t);
+    
+    $o[] = $row;
 }
   
 // 3, 4 최종 결과 데이터를 JSON 스트링으로 변환 후 출력
