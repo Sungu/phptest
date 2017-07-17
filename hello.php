@@ -9,7 +9,7 @@ if (!$conn) {
   exit;
 }
 
-$result = pg_query($conn, "SELECT array_to_json(*) FROM gene where symbol= 'TP53' and ncbitaxid = '9606'"); 
+$result = pg_query($conn, "SELECT array_to_json FROM gene where symbol= 'TP53' and ncbitaxid = '9606'"); 
     // 2. 데이터베이스로부터 반환된 데이터를
     // 객체 형태로 가공함
 if (!$result){
@@ -23,6 +23,4 @@ while ($row = pg_fetch_row($result)) {
     $data[] = $row;
 }
 
-
 echo json_encode($data);
-if(isset($data));
