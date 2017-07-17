@@ -53,7 +53,7 @@ while ($row = pg_fetch_row($result4)) {
 $data_all = array($entity1 => $data1 , $entity2 => $data2 , $entity3 => $data3 , $entity4 => $data4);
 
 
-print_r ($data_all);
+print_r (json_encode($data_all));
 // $fp = fopen('dic.json', 'w');
 // fwrite($fp, json_encode($data));
 // fclose($fp);
