@@ -4,10 +4,10 @@ header("Content-Type:application/json");
 // 1. 데이터베이스에서 데이터를 가져옴
 $conn = pg_connect('host=heart5.kaist.ac.kr dbname=codatest_mjkwon port=5432 user=bisler password=bislaprom3 connect_timeout=5') or die('Could not connect: '.pg_last_error());
 
-$query = "SELECT * FROM gene where entrezid='6257'";
-$query .= "SELECT * FROM gene where entrezid='5468'";
-$query .= "SELECT * FROM gene where entrezid='7849'";
-$query .= "SELECT * FROM gene where entrezid='6256'";
+$query = "SELECT * FROM gene where entrezid='6257';";
+$query .= "SELECT * FROM gene where entrezid='5468';";
+$query .= "SELECT * FROM gene where entrezid='7849';";
+$query .= "SELECT * FROM gene where entrezid='6256';";
 
 // $result = pg_query($conn, "SELECT * FROM gene where symbol= 'TP53'");
 $result = pg_query($conn, $query);
