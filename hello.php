@@ -18,28 +18,28 @@ $result4 = pg_query($conn, $query4);
     // 객체 형태로 가공함
 
 $data1 = array();
-while ($row = pg_fetch_row($result)) {
+while ($row = pg_fetch_row($result1)) {
     
     $data1[] = array('geneid'=> $row[0],'entrezid'=> $row[1],'a_ensemblid'=> $row[2],'a_biogridid'=> $row[3],'a_pharmgkbid'=> $row[4],'symbol'=> $row[5],
                     'a_synonym'=> $row[6],'ncbitaxid'=> $row[7],'a_uniprotid'=> $row[8],'a_ecnumber'=> $row[9],'a_goid'=> $row[10]);
 }
 
 $data2 = array();
-while ($row = pg_fetch_row($result)) {
+while ($row = pg_fetch_row($result2)) {
     
     $data2[] = array('geneid'=> $row[0],'entrezid'=> $row[1],'a_ensemblid'=> $row[2],'a_biogridid'=> $row[3],'a_pharmgkbid'=> $row[4],'symbol'=> $row[5],
                     'a_synonym'=> $row[6],'ncbitaxid'=> $row[7],'a_uniprotid'=> $row[8],'a_ecnumber'=> $row[9],'a_goid'=> $row[10]);
 }
 
 $data3 = array();
-while ($row = pg_fetch_row($result)) {
+while ($row = pg_fetch_row($result3)) {
     
     $data3[] = array('geneid'=> $row[0],'entrezid'=> $row[1],'a_ensemblid'=> $row[2],'a_biogridid'=> $row[3],'a_pharmgkbid'=> $row[4],'symbol'=> $row[5],
                     'a_synonym'=> $row[6],'ncbitaxid'=> $row[7],'a_uniprotid'=> $row[8],'a_ecnumber'=> $row[9],'a_goid'=> $row[10]);
 }
 
 $data4 = array();
-while ($row = pg_fetch_row($result)) {
+while ($row = pg_fetch_row($result4)) {
     
     $data4[] = array('geneid'=> $row[0],'entrezid'=> $row[1],'a_ensemblid'=> $row[2],'a_biogridid'=> $row[3],'a_pharmgkbid'=> $row[4],'symbol'=> $row[5],
                     'a_synonym'=> $row[6],'ncbitaxid'=> $row[7],'a_uniprotid'=> $row[8],'a_ecnumber'=> $row[9],'a_goid'=> $row[10]);
