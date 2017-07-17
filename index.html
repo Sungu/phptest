@@ -2,71 +2,480 @@
  
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
-  <script src="http://code.jquery.com/jquery-latest.js"></script> 
-</head>
-<body>
-
-<form action="/" id="searchForm">
-  <input type="text" name="s" placeholder="Search..." /> 
-  <input type="submit" value="Search" /> 
-</form> <!-- the result of the search will be rendered inside this div --> 
-
-<div id="result"></div> 
-
-
-
-<script>
-
-  $(document).ready(function() {
+  <title></title>
+  <script src="http://code.jquery.com/jquery-latest.js"></script>
+  <script src="https://d3js.org/d3.v3.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  
+  <script>
+          
+    var data;
+    var node_list = []
+    var link_list = []
+    var nodes = []
+    var links = []
+    var lastlink_num = 0
+    var tablerow_num = null
+    var table_list = []
+    var node_table_list = []
+    var temp = []
+    var temp2 =[]
+    var node_name_list = []
     
-    $("#searchForm").submit(function(event) { 
-      
-      event.preventDefault(); 
-      
-      var $form = $( this ), term = $form.find( 'input[name="s"]' ).val(), url = $form.attr( 'action' ); 
-      
-      $.post( url, { s: term }, function( data ) { 
-        var content = $( data ).find( '#content' ); 
-        $( "#result" ).empty().append( content ); 
+    var node_level = []
+    var level_check = 0
+  
+    $(document).ready(function () {
+      $("#test").submit(function (e) {
+        
+        e.preventDefault();
+
+        var coda_scf = new Object();
+        coda_scf.network_num = $('#network_num').val();
+        coda_scf.network_file = $('#network_file').val();
+         
+        coda_scf.edge_1 = $('#edge_1').val();
+        coda_scf.nodeType_1 = $('#nodeType_1').val();
+        coda_scf.node_1 = $('#node_1').val();
+        coda_scf.num_1 = $('#num_1').val();
+         
+        coda_scf.edge_2 = $('#edge_2').val();
+        coda_scf.nodeType_2 = $('#nodeType_2').val();
+        coda_scf.node_2 = $('#node_2').val();
+        coda_scf.num_2 = $('#num_2').val();
+         
+        coda_scf.edge_3 = $('#edge_3').val();
+        coda_scf.nodeType_3 = $('#nodeType_3').val();
+        coda_scf.node_3 = $('#node_3').val();
+        coda_scf.num_3 = $('#num_3').val();
+         
+        coda_scf.edge_4 = $('#edge_4').val();
+        coda_scf.nodeType_4 = $('#nodeType_4').val();
+        coda_scf.node_4 = $('#node_4').val();
+        coda_scf.num_4 = $('#num_4').val();
+        
+        $.ajax({
+          type: "GET",
+          url: 'http://heart5.kaist.ac.kr:8164/test_app/result_scaffold_modified',
+          dataType : "jsonp",
+          crossDomain: true,
+          async: false,
+          data: coda_scf,                  
+          jsonp: 'callback',
+          error:function(xhr,status,error){
+            console.log(xhr);
+            console.log(error);
+          },
+          success: function(data){
+            var max_length = data[data.length-1]["Length"]
+            
+            var table = d3.select("#datatable").append("div")
+                                              .style("width", "100%")
+                                              .style("overflow", "scroll")
+                                              .append("table")
+                                              .classed("table",true)
+                                              .classed("table-striped",true)
+                                              .classed("table-bordered",true)
+                                              .classed("text-center",true)
+                                              .attr("id","coda_scf")
+            var  thead = table.append("thead");
+            var  tfoot = table.append("tfoot");
+            var  tbody = table.append("tbody");
+            tr = thead.append("tr")
+            var ttr = tfoot.append("tr")
+            
+            for (var i=0;i<data[data.length-1]["Length"]+1;i++){
+              if (i==0){
+                tr.append("th").text(`Conf`)
+                                .style("text-align","center")
+                                .style("padding","10px");
+                ttr.append("th").text(`Conf`)
+                                .style("text-align","center")
+                                .style("padding","10px");
+              }
+              else if (i==1){
+                tr.append("th").text(`Start Node`)
+                                .style("text-align","center")
+                                .style("padding","10px");
+                ttr.append("th").text(`Entiy${i}`)
+                                .style("text-align","center")
+                                .style("padding","10px");                
+              }
+              else if(i==max_length){
+                tr.append("th").text(`End Node`)
+                                .style("text-align","center")
+                                .style("padding","10px");
+                ttr.append("th").text(`Entiy${i}`)
+                                .style("text-align","center")
+                                .style("padding","10px");                
+              }
+              else{
+                tr.append("th").text(`Inter ${i-1}`)
+                                .style("text-align","center")
+                                .style("padding","10px");
+                ttr.append("th").text(`Entiy${i}`)
+                                .style("text-align","center")
+                                .style("padding","10px");
+              }
+              
+              
+              // if (i != data[data.length-1]["Length"]-1){
+              //   tr.append("th").text(`Link${i+1}`)
+              //                     .style("text-align","center")
+              //                     .style("padding","10px");
+              //   ttr.append("th").text(`Link${i+1}`)
+              //                   .style("text-align","center")
+              //                   .style("padding","10px");
+              // }
+              
+            }
+            
+            var refined_data = []
+            var k=0
+            data.forEach(
+              function(value){
+                refined_data.push({})
+                for (var i=0;i<max_length;i++){
+                  refined_data[k]['conf'] = `${Math.floor(Math.random()*100) +1}%`;
+                  if(i==0){
+                    refined_data[k]['start'] = value["Path"][2*i]
+                  }
+                  else if(i<value['Length']-1){
+                    refined_data[k][`inter${i}`] = value["Path"][2*i]
+                    // if(i !=data[data.length-1] -1){
+                    //   refined_data[k][`Link${i+1}`] = value["Path"][2*i+1]
+                  }
+                  else if(i<max_length-1){
+                    refined_data[k][`inter${i}`] = '-'
+                  }
+                }
+                refined_data[k]['end'] = value["Path"][value['Length']*2-2]
+                k = k+1
+              }
+            )
+           var json = {}
+           
+           json["metadata"]={"n":max_length-2}
+           json["data"]=refined_data
+           console.log(JSON.stringify(json))
+           
+            var tr = tbody.selectAll('tr')
+          		  .data(json['data'])
+          		  .enter().append('tr')
+          		  .attr('class', function(d,i){ return "row_" + i; })
+                .on('mouseover', function(d,i){
+                  d3.selectAll("tr.row_" + i)
+                      .style('background-color', 'lightgray');
+                })
+                .on('mouseout', function(d,i){
+                        d3.selectAll('tr.row_' + i)
+                              .style('background-color', null);
+                })
+                .on('mousedown', function(d,i){
+                  tablerow_num = i
+                  // d3.selectAll(`path`).style("stroke-dasharray","10,2")
+                      d3.selectAll(`path`).style("stroke-dasharray","none")
+                      d3.selectAll(`circle:nth-child(1)`).style("stroke-width","0.5px")
+                  table_list[tablerow_num].forEach(
+                    function(value){
+                      d3.selectAll(`path:nth-child(${value+1})`).style("stroke-dasharray","10,2")
+                    }
+                  )
+                  
+                  node_table_list[tablerow_num].forEach(
+                    function(value){
+                      d3.select("g:last-child").selectAll(`g:nth-child(${value+1}`).select('circle').style("stroke-width","4px")
+                    }
+                  )
+                })
+            
+            var td = tr.selectAll("td")
+              .data(function(row){
+                return Object.keys(refined_data[refined_data.length-1]).map(function(column){
+                  return {column: column,value:row[column]};
+                  });
+              })
+              .enter().append("td")
+                .text(function(d){return d.value;})
+        
+            $('#coda_scf tfoot th').each( function () {
+                var title = $(this).text();
+                $(this).html( '<input class="text-center" type="text" placeholder="Search '+title+'" />' );
+            });
+         
+            function getindex(element){
+            for (var i=0;i<node_list.length;i++){
+              if (node_list[i] == element){
+                return i
+              }
+            }
+          }
+          
+          for (var i=0;i<json.data.length;i++) {
+            temp = []
+            temp2 = []
+            for (var j=1;j<json.metadata['n']+3;j++){
+              var k = Object.keys(json.data[0])[j]
+              if (node_list.indexOf(json.data[i][k]) == -1 && json.data[i][k]!='-'){
+                node_list.push(json.data[i][k])
+                nodes.push({id: json.data[i][k], reflexive: true})
+              }
+              if (json.data[i][k] != '-'){
+                temp.push(getindex(json.data[i][k]))
+                temp2.push(json.data[i][k])
+              }
+            }
+            node_table_list.push(temp)
+            node_name_list.push(temp2)
+          }
+        	
+          function gettableindex(element){
+            for (var i=0;i<link_list.length;i++){
+              if(link_list[i] == element){
+                return i
+              }
+            }
+          }
+          var g
+          for (var i=0;i<json.data.length;i++) {
+            temp = []
+            for (var j=1;j<json.metadata['n']+2;j++){
+              var k = Object.keys(json.data[0])[j]
+              var l = Object.keys(json.data[0])[j+1]
+              
+              if (link_list.indexOf(json.data[i][k]+json.data[i][l]) == -1 ){
+                if(json.data[i][k]=='-' && json.data[i][l]=='-'){
+                  continue
+                }
+                else if(json.data[i][k]!='-' && json.data[i][l]=='-'){
+                  g = k
+                }
+                else if(json.data[i][k]=='-' && json.data[i][l]!='-'){
+                  link_list.push(json.data[i][g]+json.data[i][l])
+                  links.push({source: nodes[getindex(json.data[i][g])],target: nodes[getindex(json.data[i][l])],left:false,right:true})
+                  temp.push(lastlink_num)
+                  lastlink_num += 1
+                  g=0
+                }
+                else{
+                  link_list.push(json.data[i][k]+json.data[i][l])
+                  links.push({source: nodes[getindex(json.data[i][k])],target: nodes[getindex(json.data[i][l])],left:false,right:true})
+                  temp.push(lastlink_num)
+                  lastlink_num += 1
+                }
+              }
+              else{
+                temp.push(gettableindex(json.data[i][k]+json.data[i][l]))
+              }
+            }
+            table_list.push(temp)
+          }
+            
+          console.log(node_list)
+          
+          $.ajax({
+             type: "POST",
+             url: "hello.php",
+             data: {node_list : node_list},
+             success: function(data) {
+                  alert(data)
+             }
+          });
+            
+            
+          }
+        });
+        return false
         
       });
-      
-    }); 
-    
-    
-    function getURL(){
-      var url = window.location.href;
-      var phenName = url.split('?')[1];
-      var fileName = phenName + '_search.txt';
-      GetDBJSON(fileName);
-    }
-    
-    function GetDBJSON(fileName){
-      $.getJSON('coconut_db/'+fileName, null, function(data){
-        for (i=0; i<data.length; i++){
-            tot_resultData.push(data[i].compounds);
-            tot_ruleIDarray.push(data[i].cocoaID);
-            tot_phenIDarray.push(data[i].disease);
-            tot_supparray.push(data[i].support);
-            tot_confarray.push(data[i].confidence);
-            tot_liftarray.push(data[i].lift);
-        }
-        compound_SQL = readTextFile('coconut_db/compounds/' +fileName);
-       
-        compound_SQL_FILE = '[' + compound_SQL_FILE +']';
-        compound_SQL_FILE = compound_SQL_FILE.replace(/}{/g, '},{');
-        //console.log(compound_SQL_FILE);
-        compound_SQL_json = JSON.parse(compound_SQL_FILE);
-        console.log(compound_SQL_json)
+    });
+          
+          
+  </script>
+</head>
+<body>
+  
+  <form id="test">
+    <div>
+      <label for="network_num">Select CODA Network:&nbsp;</label>
+      <select name="network_num" id="network_num">
+          <option value="test_net_scaf">Test_network</option>
+          <option value="default">Default_network</option>
+          <option value="breast_adi">Breast-Adipocytes</option>
+          <option value="breast_gla">Breast-Glandular cells</option>
+          <option value="breast_myo">Breast-myoepithelial cells</option>
+          <option value="cereb_endo">Cerebral Cortex-Endothelial cells</option>
+          <option value="cereb_glia">Cerebral Cortex-Neuroglia</option>
+          <option value="cereb_neu">Cerebral Cortex-Neurons</option>
+          <option value="cedict = {}reb_npil">Cerebral Cortex-Neuropil</option>
+          <option value="colon_endo">Colon-Endothelial cells</option>
+          <option value="colon_gla">Colon-Glandular cells</option>
+          <option value="colon_neu">Colon-Neurons</option>
+          <option value="kid_mes">Kidney-Mesangial cells</option>
+          <option value="kid_mic">Kidney-Microtubules</option>
+          <option value="liver_bile">Liver-Bile duct cells</option>
+          <option value="liver_hep">Liver-Hepatocytes</option>
+          <option value="lung_mac">Lung-Macrophages</option>
+          <option value="lung_pneu">Lung-Pneumocytes</option>
+          <option value="lymph_germ">Lymph Nodes-Germinal center cells</option>
+          <option value="lymph_ngerm">Lymph Nodes-Non germinal center cells</option>
+          <option value="panc_exo">Pancreas-Exocrine glandular cells</option>
+          <option value="panc_ins">Pancreas-Insulin secreting cells</option>
+          <option value="thy_gla">Thyroid Gland-Glandular cells</option>
+      </select>
+    </div>
+      or
+    <div>
+        <label for="file1">Upload Network:&nbsp;</label>
+        <input type="file" name="network_file" id="network_file" />
+    </div>
+    <br>
 
-      })
-    }
-    
-    
-  });
-</script>
-    
+    <div>
+      <p>Start Node:</p>
+        <select name="edge_1" id="edge_1">
+            <option value="NA">Nothing</option>
+            <option value="PINC">Positive Increase</option>
+            <option value="PDEC">Positive Decrease</option>
+            <option value="NINC">negative Increase</option>
+            <option value="NDEC">Negative Decrease</option>
+            <option value="PCOR">Positive Correlation</option>
+            <option value="NCOR">Negative Correlation</option>
+            <option value="DLIK">Directed Link</option>
+            <option value="ULIK">Undirected Link</option>
+            <option value="ALLA">Anything</option>
+        </select>
 
+        <select name="nodeType_1" id="nodeType_1">
+            <option value="GE">Gene</option>
+            <option selected="selected" value="CP">Compound</option>
+            <option value="PH">Phenotype</option>
+            <option value="BP">Biological Process</option>
+            <option value="MF">Molecular Function</option>
+            <option value="CC">Cell Compartment</option>
+            <option value="CE">Cell</option>
+            <option value="OR">Organ</option>
+            <option value="OG">Organism</option>
+            <option value="TS">Tissue</option>
+        </select>
+
+        <input type="text" id="node_1" name = "node_1" value = "A(CP00374004)">
+        <input type="text" id="num_1" name = "num_1" value="1">
+    </div>
+    <div>
+      <p>2nd Node:</p>
+      <select name="edge_2" id="edge_2">
+          <option value="NA">Nothing</option>
+          <option value="PINC">Positive Increase</option>
+          <option value="PDEC">Positive Decrease</option>
+          <option value="NINC">negative Increase</option>
+          <option value="NDEC">Negative Decrease</option>
+          <option value="PCOR">Positive Correlation</option>
+          <option value="NCOR">Negative Correlation</option>
+          <option value="DLIK">Directed Link</option>
+          <option value="ULIK">Undirected Link</option>
+          <option selected="selected" value="ALLA">Anything</option>
+      </select>
+
+      <select name="nodeType_2" id="nodeType_2">
+          <option value="GE">Gene</option>
+          <option value="CP">Compound</option>
+          <option value="PH">Phenotype</option>
+          <option value="BP">Biological Process</option>
+          <option value="MF">Molecular Function</option>
+          <option value="CC">Cell Compartment</option>
+          <option value="CE">Cell</option>
+          <option value="OR">Organ</option>
+          <option value="OG">Organism</option>
+          <option value="TS">Tissue</option>
+      </select>
+
+      <input type="text" id="node_2" name = "node_2" value = "">
+      <input type="text" id="num_2" name = "num_2" value = "3">
+    </div><br>
+    
+    <div>
+      <p>3rd Node:</p>
+      <select name="edge_3" id="edge_3">
+          <option value="NA">Nothing</option>
+          <option value="PINC">Positive Increase</option>
+          <option value="PDEC">Positive Decrease</option>
+          <option value="NINC">negative Increase</option>
+          <option value="NDEC">Negative Decrease</option>
+          <option value="PCOR">Positive Correlation</option>
+          <option value="NCOR">Negative Correlation</option>
+          <option value="DLIK">Directed Link</option>
+          <option value="ULIK">Undirected Link</option>
+          <option selected="selected" value="ALLA">Anything</option>
+      </select>
+
+      <select name="nodeType_3" id="nodeType_3">
+          <option value="GE">Gene</option>
+          <option value="CP">Compound</option>
+          <option value="PH">Phenotype</option>
+          <option selected="selected" value="BP">Biological Process</option>
+          <option value="MF">Molecular Function</option>
+          <option value="CC">Cell Compartment</option>
+          <option value="CE">Cell</option>
+          <option value="OR">Organ</option>
+          <option value="OG">Organism</option>
+          <option value="TS">Tissue</option>
+      </select>
+
+      <input type="text" id="node_3" name = "node_3" value = "">
+      <input type="text" id="num_3" name = "num_3" value = "2">
+    </div><br>
+    
+    <div>
+      <p>Final Node:</p>
+      <select name="edge_4" id="edge_4">
+          <option value="NA">Nothing</option>
+          <option value="PINC">Positive Increase</option>
+          <option value="PDEC">Positive Decrease</option>
+          <option value="NINC">negative Increase</option>
+          <option value="NDEC">Negative Decrease</option>
+          <option value="PCOR">Positive Correlation</option>
+          <option value="NCOR">Negative Correlation</option>
+          <option value="DLIK">Directed Link</option>
+          <option value="ULIK">Undirected Link</option>
+          <option selected="selected" value="ALLA">Anything</option>
+      </select>
+
+      <select name="nodeType_4" id="nodeType_4">
+          <option value="GE">Gene</option>
+          <option value="CP">Compound</option>
+          <option selected="selected" value="PH">Phenotype</option>
+          <option value="BP">Biological Process</option>
+          <option value="MF">Molecular Function</option>
+          <option value="CC">Cell Compartment</option>
+          <option value="CE">Cell</option>
+          <option value="OR">Organ</option>
+          <option value="OG">Organism</option>
+          <option value="TS">Tissue</option>
+      </select>
+
+      <input type="text" id="node_4" name = "node_4" value = "PH00010834()">
+      <input type="text" id="num_4" name = "num_4" value = "1">
+    </div>
+
+    <p>
+      <input type="submit" value="Send" />
+
+    </p>
+  </form> 
+  
+  <div class="row">
+	  <div class="col-sm-12">
+      <div id="datatable" class="card-box table-responsive">
+        <h4 class="m-t-0 header-title"><b>Entity list</b></h4>
+        <p class="text-muted font-14 m-b-30">
+            Table of Scaffold paths from start nodes to end nodes
+        </p>
+      </div>
+    </div>
+	</div>
 
 </body>
 </html>
