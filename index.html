@@ -272,12 +272,10 @@
             }
             table_list.push(temp)
           }
-            
-          console.log(node_list)
-          
+
           $.ajax({
              type: "POST",
-             url: "hello.php",
+             url: "coda_info.php",
              data: {node_list : node_list},
              success: function(data) {
                   console.log(data)
