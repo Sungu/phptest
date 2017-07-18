@@ -97,9 +97,9 @@ for($i=1;$i <= count(node_list);$i++){
 
 // 2. 데이터베이스로부터 반환된 데이터를
 // 객체 형태로 가공함
-$data_all=array()
+$data_all=array();
 for($i=1;$i <= count(node_list);$i++){
-    array_push($data_all,${"entity".$i} => ${"data".$i});
+    array_push($data_all,(${"entity".$i} => ${"data".$i}));
 }
 
 echo json_encode($data_all);
