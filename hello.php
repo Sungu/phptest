@@ -6,11 +6,11 @@ $conn = pg_connect('host=heart5.kaist.ac.kr dbname=codatest_mjkwon port=5432 use
 
 $node_list = $_POST['node_list'];
 
-for($i=1;$i <= count(node_list);$i++){
+for($i=1;$i <= count($node_list);$i++){
     ${"entity".$i} = $node_list[$i-1];
 }
 
-for($i=1;$i <= count(node_list);$i++){
+for($i=1;$i <= count($node_list);$i++){
     if(substr(${"entity".$i},0,2)=="GE"){
         ${"query".$i} = "SELECT * FROM gene where geneid='${"entity".$i}';";
     }
@@ -47,7 +47,7 @@ for($i=1;$i <= count(node_list);$i++){
     }
 }
 
-for($i=1;$i <= count(node_list);$i++){
+for($i=1;$i <= count($node_list);$i++){
     ${"result".$i} = pg_query($conn, ${"query".$i});
     ${"data".$i} = array();
     while ($row = pg_fetch_row(${"result".$i})) {
@@ -93,12 +93,8 @@ for($i=1;$i <= count(node_list);$i++){
     }
 }
 
-// $result = pg_query($conn, "SELECT * FROM gene where symbol= 'TP53'");
-
-// 2. 데이터베이스로부터 반환된 데이터를
-// 객체 형태로 가공함
 $data_all=array();
-for($i=1;$i <= count(node_list);$i++){
+for($i=1;$i <= count($node_list);$i++){
     $data_all[${"entity".$i}] = ${"data".$i};
 }
 
